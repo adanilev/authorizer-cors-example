@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Expose a CORS enabled API with a Lambda Authorizer
+
+Resources:
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      EndpointConfiguration: REGIONAL
+      Auth:
+        DefaultAuthorizer: MyAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          MyAuthorizer:
+            FunctionArn: !GetAtt AuthorizerFunction.Arn
+      Cors:
+        AllowHeaders: "'Authorization'"
+        AllowOrigin: "'http://localhost:8080'"
+
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: authorizer.handler
+      Runtime: nodejs10.x
+
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: hello-world.handler
+      Runtime: nodejs10.x
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /
+            Method: get
+
+Outputs:
+  HelloWorldApi:
+    Description: 'HelloWorldFunction dev stage endpoint'
+    Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/dev'

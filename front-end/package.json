@@ -1,0 +1,15 @@
+{
+  "name": "front-end",
+  "version": "1.0.0",
+  "description": "dummy site to test cors",
+  "main": "index.js",
+  "repository": "https://github.com/adanilev/authorizer-cors-example",
+  "author": "Alex Danilevsky",
+  "license": "MIT",
+  "scripts": {
+    "start": "serve -p 8080"
+  },
+  "dependencies": {
+    "serve": "^11.1.0"
+  }
+}
